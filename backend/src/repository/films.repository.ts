@@ -47,7 +47,9 @@ const ScheduleSchema = new mongoose.Schema<ScheduleType>({
   taken: { type: [String], default: [] },
 });
 
-const FilmSchema = new mongoose.Schema<FilmType>({
+export const FilmName = 'Film';
+
+export const FilmSchema = new mongoose.Schema<FilmType>({
   id: { type: String, required: true },
   rating: { type: Number, required: true },
   director: { type: String, required: true },
@@ -93,8 +95,8 @@ export class FilmsRepository {
   }
 
   async findAll(): Promise<GetAllFilmsDto> {
-    let items:FilmType[] = []; 
-    let total = 0; 
+    let items: FilmType[] = [];
+    let total = 0;
     items = await this.films.find({});
     total = items.length;
     return {
@@ -105,13 +107,15 @@ export class FilmsRepository {
 
   async findScheduleByFilmId(id: string): Promise<GetScheduleByFilmDTO> {
     let items: ScheduleType[] = [];
-    let total = 0; 
+    let total = 0;
     items = (await this.films.findOne({ id })).schedule;
     total = items.length;
     return {
       total: total,
-      items: items.map((schedule: ScheduleType) => this.getScheduleMapperFn(schedule)),
-    };    
+      items: items.map((schedule: ScheduleType) =>
+        this.getScheduleMapperFn(schedule),
+      ),
+    };
   }
 
   async findScheduleById(
