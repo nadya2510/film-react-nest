@@ -4,15 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as path from 'node:path';
 import { configProvider } from './app.config.provider';
-import { FilmsController } from './films/films.controller';
-import { OrderController } from './order/order.controller';
-import { FilmsService } from './films/films.service';
-import { OrderService } from './order/order.service';
-import {
-  FilmsRepository,
-  FilmSchema,
-  FilmName,
-} from './repository/films.repository';
+import { FilmsModule } from './films/films.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -26,13 +19,14 @@ import {
         uri: configService.get<string>('DATABASE_URL'),
       }),
     }),
-    MongooseModule.forFeature([{ name: FilmName, schema: FilmSchema }]),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', 'public', 'content', 'afisha'),
       serveRoot: '/content/afisha',
     }),
+    OrderModule,
+    FilmsModule,
   ],
-  controllers: [FilmsController, OrderController],
-  providers: [configProvider, FilmsService, OrderService, FilmsRepository],
+  controllers: [],
+  providers: [configProvider],
 })
 export class AppModule {}

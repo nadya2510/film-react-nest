@@ -1,70 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import mongoose from 'mongoose';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import {
   GetFilmDto,
   GetScheduleDTO,
   GetAllFilmsDto,
   GetScheduleByFilmDTO,
 } from '../films/dto/films.dto';
-
-type ScheduleType = {
-  id: string;
-  daytime: Date;
-  hall: number;
-  rows: number;
-  seats: number;
-  price: number;
-  taken: string[];
-};
-
-type FilmType = {
-  id: string;
-  rating: number;
-  director: string;
-  tags: string[];
-  image: string;
-  cover: string;
-  title: string;
-  about: string;
-  description: string;
-  schedule: ScheduleType[];
-};
-
-export type FilmUpdateType = {
-  film: string;
-  session: string;
-  taken: string;
-};
-
-// Явно описываем схему для GetScheduleDTO
-const ScheduleSchema = new mongoose.Schema<ScheduleType>({
-  id: { type: String, required: true },
-  daytime: { type: Date, required: true },
-  hall: { type: Number, required: true },
-  rows: { type: Number, required: true },
-  seats: { type: Number, required: true },
-  price: { type: Number, required: true },
-  taken: { type: [String], default: [] },
-});
-
-export const FilmName = 'Film';
-
-export const FilmSchema = new mongoose.Schema<FilmType>({
-  id: { type: String, required: true },
-  rating: { type: Number, required: true },
-  director: { type: String, required: true },
-  tags: { type: [String], default: [] },
-  image: { type: String, required: true },
-  cover: { type: String, required: true },
-  title: { type: String, required: true },
-  about: { type: String, required: true },
-  description: { type: String, required: true },
-  schedule: { type: [ScheduleSchema], default: [] },
-});
+import {
+  Film,
+  FilmType,
+  ScheduleType,
+  FilmUpdateType,
+  FilmDocument,
+} from './film.schema';
 
 @Injectable()
 export class FilmsRepository {
-  private films = mongoose.model('Film', FilmSchema);
+  constructor(@InjectModel(Film) private films: Model<FilmDocument>) {}
+
   private getFilmMapperFn(film: FilmType): GetFilmDto {
     return {
       id: film.id,
