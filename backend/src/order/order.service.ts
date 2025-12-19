@@ -2,7 +2,7 @@ import { Injectable, Post, Body } from '@nestjs/common';
 import { PostOrderDTO } from './dto/order.dto';
 import { FilmsRepository } from '../repository/films.repository';
 import { FilmUpdateType } from '../repository/film.schema';
-import { v4 as uuidv4 } from 'uuid';
+import { faker } from '@faker-js/faker';
 import { ServerException } from '../exceptions/server.exception';
 import { ErrorCode } from '../exceptions/error-codes';
 
@@ -47,7 +47,7 @@ export class OrderService {
           row,
           seat,
           price,
-          id: uuidv4(),
+          id: faker.string.uuid(),
         });
       } catch (err) {
         throw err;
