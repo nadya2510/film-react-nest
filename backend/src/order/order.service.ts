@@ -1,9 +1,7 @@
 import { Injectable, Post, Body } from '@nestjs/common';
 import { PostOrderDTO } from './dto/order.dto';
-import {
-  FilmsRepository,
-  FilmUpdateType,
-} from '../repository/films.repository';
+import { FilmsRepository } from '../repository/films.repository';
+import { FilmUpdateType } from '../repository/film.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { ServerException } from '../exceptions/server.exception';
 import { ErrorCode } from '../exceptions/error-codes';
