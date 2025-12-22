@@ -48,10 +48,10 @@ export class FilmsRepository {
     };
   }
 
-  async findAll(): Promise<GetAllFilmsDto> {
+  async findAll(limit: number = 100, offset: number = 0): Promise<GetAllFilmsDto> {
     let items: FilmType[] = [];
     let total = 0;
-    items = await this.films.find({});
+    items = await this.films.find({}).limit(limit).skip(offset).exec();
     total = items.length;
     return {
       total: total,

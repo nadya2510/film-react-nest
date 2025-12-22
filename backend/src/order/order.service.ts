@@ -1,4 +1,4 @@
-import { Injectable, Post, Body } from '@nestjs/common';
+import { Injectable, Body } from '@nestjs/common';
 import { PostOrderDTO } from './dto/order.dto';
 import { FilmsRepository } from '../repository/films.repository';
 import { FilmUpdateType } from '../repository/film.schema';
@@ -19,7 +19,7 @@ type TicketType = {
 @Injectable()
 export class OrderService {
   constructor(private readonly filmsRepository: FilmsRepository) {}
-  @Post()
+
   async create(@Body() date: PostOrderDTO) {
     const items: TicketType[] = [];
 
@@ -33,12 +33,11 @@ export class OrderService {
           session,
         );
 
-        //Проверяем занятость места
-        if (schedule.taken.length > 0) {
-          if (schedule.taken.includes(seatKey)) {
-            throw new ServerException(ErrorCode.InvalidRequest);
-          }
+        //Проверяем занятость места       
+        if (!schedule || (schedule.taken && schedule.taken.includes(seatKey))) {
+          throw new ServerException(ErrorCode.InvalidRequest);
         }
+       
 
         items.push({
           film,

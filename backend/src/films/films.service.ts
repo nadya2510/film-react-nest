@@ -4,8 +4,8 @@ import { FilmsRepository } from '../repository/films.repository';
 @Injectable()
 export class FilmsService {
   constructor(private readonly filmsRepository: FilmsRepository) {}
-  async findAll() {
-    return this.filmsRepository.findAll();
+  async findAll(limit: number = 100, offset: number = 0) {
+    return this.filmsRepository.findAll( limit,offset);
   }
 
   findScheduleByFilmId(id: string) {
