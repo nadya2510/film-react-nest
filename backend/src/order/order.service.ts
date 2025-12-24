@@ -20,45 +20,46 @@ type TicketType = {
 export class OrderService {
   constructor(private readonly filmsRepository: FilmsRepository) {}
 
-  async create(@Body() date: PostOrderDTO) {
+  async create(@Body() data: PostOrderDTO) {
     const items: TicketType[] = [];
+    const filmUpdates: FilmUpdateType[] = [];
 
-    for (const ticket of date.tickets) {
+    for (const ticket of data.tickets) {
       const { film, session, row, seat, price, daytime } = ticket;
       const seatKey = `${row}:${seat}`;
 
-      try {
-        const schedule = await this.filmsRepository.findScheduleById(
-          film,
-          session,
-        );
+      const schedule = await this.filmsRepository.findScheduleById(
+        film,
+        session,
+      );
 
-        //Проверяем занятость места       
-        if (!schedule || (schedule.taken && schedule.taken.includes(seatKey))) {
-          throw new ServerException(ErrorCode.InvalidRequest);
-        }
-       
-
-        items.push({
-          film,
-          session,
-          daytime,
-          row,
-          seat,
-          price,
-          id: randomUUID(),
-        });
-      } catch (err) {
-        throw err;
+      if (!schedule || (schedule.taken && schedule.taken.includes(seatKey))) {
+        throw new ServerException(ErrorCode.InvalidRequest);
       }
-    }
-    const filmUpdates: FilmUpdateType[] = items.map((item) => ({
-      film: item.film,
-      session: item.session,
-      taken: `${item.row}:${item.seat}`,
-    }));
 
-    await this.filmsRepository.updateFilm(filmUpdates);
+      items.push({
+        film,
+        session,
+        daytime,
+        row,
+        seat,
+        price,
+        id: randomUUID(),
+      });
+
+      filmUpdates.push({
+        film: film,
+        session: session,
+        taken: seatKey,
+      });
+    }
+
+    try {
+      await this.filmsRepository.updateFilm(filmUpdates);
+    } catch (err) {
+      // Если обновление не удалось — бросаем ошибку, ничего не сохранилось
+      throw new ServerException(ErrorCode.InvalidRequest);
+    }
 
     return {
       total: items.length,

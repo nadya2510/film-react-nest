@@ -48,7 +48,10 @@ export class FilmsRepository {
     };
   }
 
-  async findAll(limit: number = 100, offset: number = 0): Promise<GetAllFilmsDto> {
+  async findAll(
+    limit: number = 100,
+    offset: number = 0,
+  ): Promise<GetAllFilmsDto> {
     let items: FilmType[] = [];
     let total = 0;
     items = await this.films.find({}).limit(limit).skip(offset).exec();
@@ -83,19 +86,21 @@ export class FilmsRepository {
   }
 
   async updateFilm(date: FilmUpdateType[]): Promise<void> {
-    for (const item of date) {
-      const { film, session, taken } = item;
-      await this.films.findOneAndUpdate(
-        {
-          id: film,
-          'schedule.id': session,
+    const operations = date.map((item) => ({
+      updateOne: {
+        filter: {
+          id: item.film,
+          'schedule.id': item.session,
         },
-        {
+        update: {
           $push: {
-            'schedule.$.taken': taken,
+            'schedule.$.taken': item.taken,
           },
         },
-      );
-    }
+      },
+    }));
+
+    // Выполняем все обновления в одной операции
+    await this.films.bulkWrite(operations, { ordered: true });
   }
 }
