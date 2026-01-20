@@ -1,6 +1,9 @@
-import { Injectable, Body } from '@nestjs/common';
+import { Injectable, Body, Inject } from '@nestjs/common';
 import { PostOrderDTO } from './dto/order.dto';
-import { FilmsRepository } from '../repository/films.repository';
+import {
+  FilmsRepository,
+  FILMS_REPOSITORY,
+} from '../repository/films.repository';
 import { FilmUpdateType } from '../repository/film.schema';
 import { randomUUID } from 'node:crypto';
 import { ServerException } from '../exceptions/server.exception';
@@ -18,7 +21,9 @@ type TicketType = {
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly filmsRepository: FilmsRepository) {}
+  constructor(
+    @Inject(FILMS_REPOSITORY) private readonly filmsRepository: FilmsRepository,
+  ) {}
 
   async create(@Body() data: PostOrderDTO) {
     const items: TicketType[] = [];
@@ -60,7 +65,6 @@ export class OrderService {
       // Если обновление не удалось — бросаем ошибку, ничего не сохранилось
       throw new ServerException(ErrorCode.InvalidRequest);
     }
-
     return {
       total: items.length,
       items,
