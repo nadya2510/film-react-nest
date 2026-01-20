@@ -47,8 +47,7 @@ export class DatabaseModule {
 
     else {
       return [
-        MongooseModule.forRootAsync({
-          imports: [ConfigModule],
+        MongooseModule.forRootAsync({          
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
             uri: configService.get<string>('DATABASE_URL'),
