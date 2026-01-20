@@ -79,11 +79,7 @@ export class DatabaseModule {
         }),
         MongooseModule.forFeature([{ name: Film, schema: FilmSchema }]),
       ];
-    }
-
-    throw new Error(
-      `Неподдерживаемый драйвер БД: ${driver}. Ожидалось "postgres" или "mongodb"`,
-    );
+    }   
   }
 
   static getDriver(): string {
