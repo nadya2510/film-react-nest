@@ -50,7 +50,7 @@ export class DatabaseModule {
         MongooseModule.forRootAsync({          
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
-            uri: configService.get<string>('DATABASE_URL'),
+            uri: configService.get<string>('DATABASE_URL')||'mongodb://localhost:27017/afisha',
           }),
         }),
         this.getImport(),
