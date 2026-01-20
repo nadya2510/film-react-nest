@@ -30,32 +30,18 @@ export class DatabaseModule {
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (config: ConfigService) => {
-            const user = config.get<string>('DATABASE_USERNAME');
-            const password = config.get<string>('DATABASE_PASSWORD');
-            const database = config.get<string>('DATABASE_NAME');
-            const host = config.get<string>('DATABASE_HOST') || 'localhost';
-            const port = config.get<number>('DATABASE_PORT') || 5432;
-
-            if (!user || !password || !database) {
-              throw new Error(
-                'Для PostgreSQL требуются: DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME',
-              );
-            }
-
-            return {
+          useFactory: (config: ConfigService) => ({          
               type: 'postgres',
-              host,
-              port,
-              username: user,
-              password: password,
-              database: database,
+              host: config.get<string>('DATABASE_HOST') || 'localhost',
+              port: config.get<number>('DATABASE_PORT') || 5432,
+              username: config.get<string>('DATABASE_USERNAME'),
+              password: config.get<string>('DATABASE_PASSWORD'),
+              database: config.get<string>('DATABASE_NAME'),
               synchronize: false,
               entities: [FilmEntity, ScheduleEntity],
-            };
-          },
+            }),          
         }),
-        TypeOrmModule.forFeature([FilmEntity, ScheduleEntity]),
+        this.getImport(),
       ];
     }
 
@@ -64,20 +50,11 @@ export class DatabaseModule {
         MongooseModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (config: ConfigService) => {
-            const url = config.get<string>('DATABASE_URL');
-            if (!url) {
-              throw new Error('Для MongoDB требуется DATABASE_URL');
-            }
-
-            return {
-              uri: url,
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-            };
-          },
+          useFactory: (configService: ConfigService) => ({
+            uri: configService.get<string>('DATABASE_URL'),
+          }),
         }),
-        MongooseModule.forFeature([{ name: Film, schema: FilmSchema }]),
+        this.getImport(),
       ];
     }   
   }
