@@ -5,7 +5,7 @@ import {
   FILMS_REPOSITORY,
 } from '../repository/films.repository';
 import { FilmUpdateType } from '../repository/film.schema';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { ServerException } from '../exceptions/server.exception';
 import { ErrorCode } from '../exceptions/error-codes';
 
@@ -49,7 +49,7 @@ export class OrderService {
         row,
         seat,
         price,
-        id: uuidv4(),
+        id: randomUUID(),
       });
 
       filmUpdates.push({
