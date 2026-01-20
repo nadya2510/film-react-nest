@@ -20,12 +20,9 @@ export const FILMS_REPOSITORY = 'FilmsRepository';
 
 export const getRepository = (): Provider => {
   const driver = DatabaseModule.getDriver();
-  switch (driver) {
-    case 'postgres':
-      return { provide: FILMS_REPOSITORY, useClass: FilmsRepositoryPostgre };
-    case 'mongodb':
-      return { provide: FILMS_REPOSITORY, useClass: FilmsRepositoryMongodb };
-    default:
-      throw new Error(`Неподдерживаемый драйвер БД: ${driver}`);
+  if (driver === 'postgres') {
+    return { provide: FILMS_REPOSITORY, useClass: FilmsRepositoryPostgre };
+  } else {
+    return { provide: FILMS_REPOSITORY, useClass: FilmsRepositoryMongodb };  
   }
 };

@@ -59,7 +59,7 @@ export class DatabaseModule {
       ];
     }
 
-    if (driver === 'mongodb') {
+    else {
       return [
         MongooseModule.forRootAsync({
           imports: [ConfigModule],
@@ -89,13 +89,10 @@ export class DatabaseModule {
 
   static getImport(): DynamicModule {
     const driver = this.getDriver();
-    switch (driver) {
-      case 'postgres':
+    if (driver === 'postgres') {
         return TypeOrmModule.forFeature([FilmEntity, ScheduleEntity]);
-      case 'mongodb':
-        return MongooseModule.forFeature([{ name: Film, schema: FilmSchema }]);
-      default:
-        throw new Error(`Неподдерживаемый драйвер БД: ${driver}`);
+    } else {
+        return MongooseModule.forFeature([{ name: Film, schema: FilmSchema }]);    
     }
   }
 }
