@@ -1,5 +1,5 @@
 import { Injectable, Body, Inject } from '@nestjs/common';
-
+import { randomUUID } from 'crypto';
 import { PostOrderDTO } from './dto/order.dto';
 import {
   FilmsRepository,
@@ -41,8 +41,7 @@ export class OrderService {
       if (!schedule || (schedule.taken && schedule.taken.includes(seatKey))) {
         throw new ServerException(ErrorCode.InvalidRequest);
       }
-      const { randomUUID } = require('crypto'); 
-      
+
       items.push({
         film,
         session,
