@@ -5,7 +5,6 @@ import {
   FILMS_REPOSITORY,
 } from '../repository/films.repository';
 import { FilmUpdateType } from '../repository/film.schema';
-import { randomBytes } from 'crypto';
 import { ServerException } from '../exceptions/server.exception';
 import { ErrorCode } from '../exceptions/error-codes';
 
@@ -49,7 +48,7 @@ export class OrderService {
         row,
         seat,
         price,
-        id: randomBytes(16).toString('hex').replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5'),
+        id:  (() => 'NEWID()') as unknown as string,
       });
 
       filmUpdates.push({
