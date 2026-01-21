@@ -1,4 +1,5 @@
 import { Injectable, Body, Inject } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { PostOrderDTO } from './dto/order.dto';
 import {
   FilmsRepository,
@@ -48,7 +49,7 @@ export class OrderService {
         row,
         seat,
         price,
-        id:  (() => 'NEWID()') as unknown as string,
+        id: uuidv4(),
       });
 
       filmUpdates.push({
