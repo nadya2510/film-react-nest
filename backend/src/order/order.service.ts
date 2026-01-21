@@ -1,5 +1,5 @@
 import { Injectable, Body, Inject } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
+import { randomBytes } from 'crypto';
 import { PostOrderDTO } from './dto/order.dto';
 import {
   FilmsRepository,
@@ -49,7 +49,7 @@ export class OrderService {
         row,
         seat,
         price,
-        id: randomUUID(),
+        id: randomBytes(16).toString('hex').replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5'),
       });
 
       filmUpdates.push({
