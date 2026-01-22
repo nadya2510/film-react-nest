@@ -40,6 +40,10 @@ export class FilmEntity {
   @Column()
   description: string;
 
-  @OneToMany(() => ScheduleEntity, (schedule) => schedule.film)
+  @OneToMany(() => ScheduleEntity, (schedule) => schedule.film, {
+    cascade: true, // автоматически сохраняет/обновляет/удаляет связанные сущности
+    onDelete: 'CASCADE', // при удалении родителя удаляются связанные записи
+    onUpdate: 'CASCADE', // при обновлении — обновляются связанные записи
+  })
   schedule: ScheduleEntity[];
 }
