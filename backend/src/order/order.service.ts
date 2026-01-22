@@ -1,8 +1,11 @@
-import { Injectable, Body } from '@nestjs/common';
+import { Injectable, Body, Inject } from '@nestjs/common';
+import { randomBytes } from 'crypto';
 import { PostOrderDTO } from './dto/order.dto';
-import { FilmsRepository } from '../repository/films.repository';
+import {
+  FilmsRepository,
+  FILMS_REPOSITORY,
+} from '../repository/films.repository';
 import { FilmUpdateType } from '../repository/film.schema';
-import { randomUUID } from 'node:crypto';
 import { ServerException } from '../exceptions/server.exception';
 import { ErrorCode } from '../exceptions/error-codes';
 
@@ -18,7 +21,9 @@ type TicketType = {
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly filmsRepository: FilmsRepository) {}
+  constructor(
+    @Inject(FILMS_REPOSITORY) private readonly filmsRepository: FilmsRepository,
+  ) {}
 
   async create(@Body() data: PostOrderDTO) {
     const items: TicketType[] = [];
@@ -44,7 +49,7 @@ export class OrderService {
         row,
         seat,
         price,
-        id: randomUUID(),
+        id: randomBytes(16).toString('hex').replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5'),
       });
 
       filmUpdates.push({
@@ -60,7 +65,6 @@ export class OrderService {
       // Если обновление не удалось — бросаем ошибку, ничего не сохранилось
       throw new ServerException(ErrorCode.InvalidRequest);
     }
-
     return {
       total: items.length,
       items,
