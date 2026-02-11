@@ -71,7 +71,7 @@ services:
     image: ghcr.io/nadya25/film-react-nest/nginx:latest
     container_name: nginx_container
     ports:
-      - "8180:80"
+      - "80:80"
     networks:
       - webnet
     restart: always
