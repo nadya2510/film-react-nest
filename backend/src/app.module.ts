@@ -6,6 +6,7 @@ import { configProvider } from './app.config.provider';
 import { DatabaseModule } from './database/database.module';
 import { FilmsModule } from './films/films.module';
 import { OrderModule } from './order/order.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { OrderModule } from './order/order.module';
       rootPath: path.join(__dirname, '..', 'public', 'content', 'afisha'),
       serveRoot: '/content/afisha',
     }),
+    LoggerModule,
     FilmsModule,
     OrderModule,
   ],

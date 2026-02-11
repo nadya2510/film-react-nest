@@ -30,7 +30,7 @@ export class TicketDTO {
   price: number;
   @IsOptional()
   @IsString()
-  id: string;
+  id?: string;
 }
 
 export class PostOrderDTO {
