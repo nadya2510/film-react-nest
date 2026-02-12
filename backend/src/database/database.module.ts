@@ -30,32 +30,32 @@ export class DatabaseModule {
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (config: ConfigService) => ({          
-              type: 'postgres',
-              host: config.get<string>('DATABASE_HOST') || 'localhost',
-              port: config.get<number>('DATABASE_PORT') || 5432,
-              username: config.get<string>('DATABASE_USERNAME'),
-              password: config.get<string>('DATABASE_PASSWORD'),
-              database: config.get<string>('DATABASE_NAME'),
-              synchronize: false,
-              entities: [FilmEntity, ScheduleEntity],
-            }),          
-        }),
-        this.getImport(),
-      ];
-    }
-
-    else {
-      return [
-        MongooseModule.forRootAsync({          
-          inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
-            uri: configService.get<string>('DATABASE_URL')||'mongodb://localhost:27017/afisha',
+          useFactory: (config: ConfigService) => ({
+            type: 'postgres',
+            host: config.get<string>('DATABASE_HOST') || 'localhost',
+            port: config.get<number>('DATABASE_PORT') || 5432,
+            username: config.get<string>('DATABASE_USERNAME'),
+            password: config.get<string>('DATABASE_PASSWORD'),
+            database: config.get<string>('DATABASE_NAME'),
+            synchronize: false,
+            entities: [FilmEntity, ScheduleEntity],
           }),
         }),
         this.getImport(),
       ];
-    }   
+    } else {
+      return [
+        MongooseModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (configService: ConfigService) => ({
+            uri:
+              configService.get<string>('DATABASE_URL') ||
+              'mongodb://localhost:27017/afisha',
+          }),
+        }),
+        this.getImport(),
+      ];
+    }
   }
 
   static getDriver(): string {
@@ -66,9 +66,9 @@ export class DatabaseModule {
   static getImport(): DynamicModule {
     const driver = this.getDriver();
     if (driver === 'postgres') {
-        return TypeOrmModule.forFeature([FilmEntity, ScheduleEntity]);
+      return TypeOrmModule.forFeature([FilmEntity, ScheduleEntity]);
     } else {
-        return MongooseModule.forFeature([{ name: Film, schema: FilmSchema }]);    
+      return MongooseModule.forFeature([{ name: Film, schema: FilmSchema }]);
     }
   }
 }

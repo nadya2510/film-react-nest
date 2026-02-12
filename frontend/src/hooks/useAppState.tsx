@@ -39,10 +39,18 @@ export function useAppState() {
     const setContacts = (contacts: Contacts) => dispatch({ type: 'setContacts', payload: contacts });
 
     const orderTickets = () => {
+        const ticketsOrder = state.basket.map(ticket => ({
+          film: ticket.film,
+          session: ticket.session,
+          daytime: ticket.daytime,
+          row: ticket.row,
+          seat: ticket.seat,
+          price: Number(ticket.price)
+        }));
         api.current.orderTickets({
             email: state.contacts.email,
             phone: state.contacts.phone,
-            tickets: state.basket
+            tickets: ticketsOrder
         }).then(() => {
             dispatch({ type: 'clearBasket' });
             dispatch({ type: 'openModal', payload: 'success' });

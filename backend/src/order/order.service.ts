@@ -8,6 +8,7 @@ import {
 import { FilmUpdateType } from '../repository/film.schema';
 import { ServerException } from '../exceptions/server.exception';
 import { ErrorCode } from '../exceptions/error-codes';
+import { LoggerApp } from '../logger/logger.service';
 
 type TicketType = {
   film: string;
@@ -22,12 +23,16 @@ type TicketType = {
 @Injectable()
 export class OrderService {
   constructor(
-    @Inject(FILMS_REPOSITORY) private readonly filmsRepository: FilmsRepository,
+    @Inject(FILMS_REPOSITORY)
+    private readonly filmsRepository: FilmsRepository,
+    private readonly logger: LoggerApp,
   ) {}
 
   async create(@Body() data: PostOrderDTO) {
     const items: TicketType[] = [];
     const filmUpdates: FilmUpdateType[] = [];
+
+    this.logger.log(`query  post: /order: body=${data}`, 'OrderService');
 
     for (const ticket of data.tickets) {
       const { film, session, row, seat, price, daytime } = ticket;
@@ -39,6 +44,10 @@ export class OrderService {
       );
 
       if (!schedule || (schedule.taken && schedule.taken.includes(seatKey))) {
+        this.logger.error(
+          `query  post: /order: error seatKey=${seatKey}`,
+          'OrderService',
+        );
         throw new ServerException(ErrorCode.InvalidRequest);
       }
 
@@ -49,7 +58,9 @@ export class OrderService {
         row,
         seat,
         price,
-        id: randomBytes(16).toString('hex').replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5'),
+        id: randomBytes(16)
+          .toString('hex')
+          .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5'),
       });
 
       filmUpdates.push({
@@ -62,6 +73,7 @@ export class OrderService {
     try {
       await this.filmsRepository.updateFilm(filmUpdates);
     } catch (err) {
+      this.logger.error(`query  post: /order: error=${err}`, 'OrderService');
       // Если обновление не удалось — бросаем ошибку, ничего не сохранилось
       throw new ServerException(ErrorCode.InvalidRequest);
     }

@@ -87,12 +87,15 @@ export interface Session {
     taken: string[];
 }
 
-export interface Ticket {
-    film: string;
-    session: string;
-    daytime: string;
+export interface Ticket extends TicketOrder {
     day: string;
     time: string;
+}
+
+export interface TicketOrder {
+    film: string;
+    session: string;
+    daytime: string;   
     row: number;
     seat: number;
     price: number;
@@ -104,7 +107,7 @@ export interface Contacts {
 }
 
 export interface Order extends Contacts {
-    tickets: Ticket[];
+    tickets: TicketOrder[];
 }
 
 export interface OrderResult extends Ticket {
