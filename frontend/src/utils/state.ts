@@ -46,7 +46,7 @@ const addTicket = (state: AppState, key: string): AppState => {
     const isExists = state.basket.some(ticket => ticket.row === row && ticket.seat === seat);
     const session = state.schedule.find(session => session.id === state.selectedSession);
     if (session) {
-        if (!isExists) {
+        if (!isExists) {            
             const ticket = {
                 film: state.selectedFilm!,
                 session: state.selectedSession!,
@@ -87,7 +87,7 @@ const validateOrder = (state: AppState): AppState => {
         errors.push('Некорректный email');
     }
     //validate phone with regexp
-    if (state.contacts.phone && !/\+7\d{10}/.test(state.contacts.phone)) {
+    if (state.contacts.phone && !/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(state.contacts.phone)) {
         errors.push('Некорректный телефон');
     }
 

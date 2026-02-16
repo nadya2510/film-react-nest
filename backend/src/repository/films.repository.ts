@@ -23,6 +23,6 @@ export const getRepository = (): Provider => {
   if (driver === 'postgres') {
     return { provide: FILMS_REPOSITORY, useClass: FilmsRepositoryPostgre };
   } else {
-    return { provide: FILMS_REPOSITORY, useClass: FilmsRepositoryMongodb };  
+    return { provide: FILMS_REPOSITORY, useClass: FilmsRepositoryMongodb };
   }
 };

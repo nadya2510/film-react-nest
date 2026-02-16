@@ -1,0 +1,96 @@
+
+services:
+  backend:
+    container_name: backend_container
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ghcr.io/nadya25/film-react-nest/backend:latest
+    depends_on:
+      - postgres
+    networks:
+      - webnet
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    expose:
+      - "3000"
+
+  frontend:
+    container_name: frontend_container
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: ghcr.io/nadya25/film-react-nest/frontend:latest
+    networks:
+      - webnet
+    volumes:
+      - frontend_dist:/usr/share/nginx/html:ro
+    env_file:
+      - ./frontend/.env
+    # Фронтенд теперь служит через Nginx, поэтому команда не нужна
+
+  postgres:
+    container_name: postgres_container
+    image: postgres:14.8-alpine3.18
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - webnet
+    expose:
+      - "5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:7.2
+    container_name: pgadmin_container
+    env_file:
+      - ./backend/.env
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "8080:80"
+    networks:
+      - webnet
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: ghcr.io/nadya25/film-react-nest/nginx:latest
+    container_name: nginx_container
+    ports:
+      - "80:80"
+    networks:
+      - webnet
+    restart: always
+    volumes:
+      - frontend_dist:/var/www/frontend:ro
+    depends_on:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  webnet:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  pgadmin-data:
+  frontend_dist:

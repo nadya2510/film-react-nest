@@ -125,7 +125,7 @@ export class FilmsRepositoryPostgre implements FilmsRepository {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      for (const item of data) {      
+      for (const item of data) {
         const schedule = await queryRunner.manager.findOne(ScheduleEntity, {
           where: {
             id: item.session,

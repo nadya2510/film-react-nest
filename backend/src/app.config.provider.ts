@@ -5,7 +5,7 @@ export const configProvider = {
   provide: 'CONFIG',
   useValue: {
     database: {
-      driver: process.env.DATABASE_DRIVER || 'postgres',
+      driver: process.env.DATABASE_DRIVER || 'mongodb',
       url: process.env.DATABASE_URL,
       user: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
@@ -13,11 +13,15 @@ export const configProvider = {
       host: process.env.DATABASE_HOST || 'localhost',
       port: parseInt(process.env.DATABASE_PORT, 10),
     },
+    logFormat: process.env.LOG_FORMAT || 'dev',
   },
 };
 
+export type TypFormat = 'dev' | 'json' | 'tskv';
+
 export interface AppConfig {
   database: AppConfigDatabase;
+  logFormat: TypFormat;
 }
 
 export interface AppConfigDatabase {
